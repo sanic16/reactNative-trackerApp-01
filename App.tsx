@@ -7,6 +7,7 @@ import RecentExpenses from "./screens/RecentExpenses";
 import AllExpenses from "./screens/AllExpenses";
 import { GlobalStyles } from "./utils/constants";
 import { Ionicons } from "@expo/vector-icons";
+import IconButton from "./components/ui/IconButton";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -14,15 +15,25 @@ const BottomTabs = createBottomTabNavigator();
 const ExpensesOverview = () => {
   return (
     <BottomTabs.Navigator
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: GlobalStyles.colors.primary500,
-        },
-        headerTintColor: "#fff",
-        tabBarStyle: {
-          backgroundColor: GlobalStyles.colors.primary500,
-        },
-        tabBarActiveTintColor: GlobalStyles.colors.accent500,
+      screenOptions={({ navigation }) => {
+        return {
+          headerStyle: {
+            backgroundColor: GlobalStyles.colors.primary500,
+          },
+          headerTintColor: "#fff",
+          tabBarStyle: {
+            backgroundColor: GlobalStyles.colors.primary500,
+          },
+          tabBarActiveTintColor: GlobalStyles.colors.accent500,
+          headerRight: ({ tintColor }) => (
+            <IconButton
+              icon="add"
+              size={24}
+              color={tintColor || "white"}
+              onPress={() => navigation.navigate("ManageExpense")}
+            />
+          ),
+        };
       }}
     >
       <BottomTabs.Screen
