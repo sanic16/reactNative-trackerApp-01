@@ -6,7 +6,9 @@ const ExpenseItem = ({ expense }: { expense: Expense }) => {
   const navigation = useNavigation();
 
   const expensePressHandler = () => {
-    navigation.navigate("ManageExpense");
+    navigation.navigate("ManageExpense", {
+      expenseId: expense.id,
+    });
   };
 
   return (

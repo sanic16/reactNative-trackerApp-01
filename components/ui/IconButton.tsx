@@ -7,10 +7,10 @@ const IconButton = ({
   color,
   onPress,
 }: {
-  icon: "add";
+  icon: "add" | "trash";
   size: number;
   color: string;
-  onPress: () => void;
+  onPress?: () => void;
 }) => {
   return (
     <Pressable
