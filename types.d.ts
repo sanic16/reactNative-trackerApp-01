@@ -4,3 +4,12 @@ type Expense = {
   date: date;
   amount: number;
 };
+
+type ExpenseWithoutId = Omit<Expense, "id">;
+
+type ExpenseContext = {
+  expenses: Expense[];
+  addExpense: (expense: ExpenseWithoutId) => void;
+  deleteExpense: (id: string) => void;
+  updateExpense: (expense: Expense) => void;
+};

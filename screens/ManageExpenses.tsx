@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import IconButton from "../components/ui/IconButton";
 import { GlobalStyles } from "../utils/constants";
 import Button from "../components/ui/Button";
+import useExpenseContext from "../store/expenses-context";
 
 const ManageExpenses = ({
   route,
@@ -14,15 +15,41 @@ const ManageExpenses = ({
   const editedExpenseId = route.params?.expenseId;
   const isEditing = !!editedExpenseId;
 
+  const { deleteExpense, updateExpense, addExpense } = useExpenseContext();
+
   useLayoutEffect(() => {
     navigation.setOptions({
       title: isEditing ? "Editar registro" : "Crear registro",
     });
   }, [navigation, isEditing]);
 
-  const deleteExpenseHandler = () => {};
-  const cancelHandler = () => {};
-  const confirmHandler = () => {};
+  const deleteExpenseHandler = () => {
+    if (editedExpenseId) {
+      deleteExpense(editedExpenseId);
+    }
+    navigation.goBack();
+  };
+  const cancelHandler = () => {
+    navigation.goBack();
+  };
+  const confirmHandler = () => {
+    if (isEditing) {
+      updateExpense({
+        id: "a1",
+        description: "un helado para la angela",
+        amount: 24,
+        date: new Date(),
+      });
+    } else {
+      addExpense({
+        description: "un iphone",
+        amount: 9999,
+        date: new Date(),
+      });
+    }
+
+    navigation.goBack();
+  };
 
   return (
     <View style={styles.container}>
