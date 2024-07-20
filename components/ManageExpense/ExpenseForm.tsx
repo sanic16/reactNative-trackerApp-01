@@ -1,9 +1,52 @@
 import { StyleSheet, Text, View } from "react-native";
 import Input from "./Input";
+import { useState } from "react";
+import Button from "../ui/Button";
 
-const ExpenseForm = () => {
-  const amountChangeHandler = () => {};
-  const dateChangeHandler = () => {};
+const ExpenseForm = ({
+  onCancel,
+  onSubmit,
+  submitButtonLabel,
+  defaultValues,
+}: {
+  onCancel: () => void;
+  onSubmit: (expenseData: {
+    quantity: number;
+    date: Date;
+    description: string;
+  }) => void;
+  submitButtonLabel: string;
+  defaultValues: Expense | undefined;
+}) => {
+  const [inputValue, setInputValues] = useState({
+    quantity: defaultValues ? defaultValues?.amount : 0,
+    date: defaultValues ? new Date(defaultValues.date).toISOString() : "",
+    description: defaultValues ? defaultValues.description : "",
+  });
+
+  const inputChangeHandler = (
+    inputIdentifier: "quantity" | "date" | "description",
+    value: string
+  ) => {
+    setInputValues((prev) => {
+      //   console.log(inputValue);
+      return {
+        ...prev,
+        [inputIdentifier]: value,
+      };
+    });
+  };
+
+  const confirmHandler = () => {
+    const expenseData = {
+      quantity: +inputValue.quantity,
+      date: new Date(inputValue.date),
+      description: inputValue.description,
+    };
+
+    onSubmit(expenseData);
+  };
+
   return (
     <View style={styles.formContainer}>
       <Text style={styles.title}>Agregar Gasto</Text>
@@ -12,7 +55,8 @@ const ExpenseForm = () => {
           label="Cantidad"
           textInputConfig={{
             keyboardType: "decimal-pad",
-            onChangeText: amountChangeHandler,
+            onChangeText: (value) => inputChangeHandler("quantity", value),
+            value: inputValue.quantity.toString(),
           }}
           style={styles.rowInput}
         />
@@ -21,7 +65,8 @@ const ExpenseForm = () => {
           textInputConfig={{
             placeholder: "YYYY-MM-DD",
             maxLength: 10,
-            onChangeText: dateChangeHandler,
+            onChangeText: (value) => inputChangeHandler("date", value),
+            value: inputValue.date,
           }}
           style={styles.rowInput}
         />
@@ -33,8 +78,18 @@ const ExpenseForm = () => {
           multiline: true,
           //   autoCorrect: false, // true is the default
           //   autoCapitalize: "sentences", // sentences is the default
+          onChangeText: (value) => inputChangeHandler("description", value),
+          value: inputValue.description,
         }}
       />
+      <View style={styles.buttonsContiner}>
+        <Button flat onPress={onCancel} style={styles.button}>
+          Cancel
+        </Button>
+        <Button onPress={confirmHandler} style={styles.button}>
+          {submitButtonLabel}
+        </Button>
+      </View>
     </View>
   );
 };
@@ -58,5 +113,14 @@ const styles = StyleSheet.create({
     color: "white",
     marginVertical: 24,
     textAlign: "center",
+  },
+  buttonsContiner: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 16,
+  },
+  button: {
+    minWidth: 120,
   },
 });
