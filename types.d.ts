@@ -1,7 +1,14 @@
 type Expense = {
   id: string;
   description: string;
-  date: date;
+  date: Date;
+  amount: number;
+};
+
+type fetchedExpense = {
+  id: number;
+  description: string;
+  date: string;
   amount: number;
 };
 
@@ -9,7 +16,7 @@ type ExpenseWithoutId = Omit<Expense, "id">;
 
 type ExpenseContext = {
   expenses: Expense[];
-  addExpense: (expense: ExpenseWithoutId) => void;
+  addExpense: (expense: Expense) => void;
   deleteExpense: (id: string) => void;
   updateExpense: (expense: Expense) => void;
 };

@@ -14,3 +14,5 @@ export const GlobalStyles = {
     gray700: "#221c30",
   },
 };
+
+export const BASE_URL = "http://192.168.1.69:8000";

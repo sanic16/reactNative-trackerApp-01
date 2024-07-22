@@ -1,9 +1,9 @@
-import { createContext, useContext, useReducer, useState } from "react";
-import { DUMMY_EXPENSES } from "../utils/data";
+import { createContext, useContext, useEffect, useReducer } from "react";
+import { fetchAllExpenses } from "../utils/http";
 
 const ExpensesContext = createContext<ExpenseContext>({
   expenses: [],
-  addExpense: (expense: ExpenseWithoutId) => {},
+  addExpense: (expense: Expense) => {},
   deleteExpense: (id: string) => {},
   updateExpense: (expense: Expense) => {},
 });
@@ -27,11 +27,8 @@ const expensesReducer = (
 ) => {
   switch (action.type) {
     case "ADD":
-      if (isExpenseWithoutId(action.payload)) {
-        return [
-          ...state,
-          { ...action.payload, id: `a-${Math.random() * 100}` },
-        ];
+      if (isExpense(action.payload)) {
+        return [...state, { ...action.payload }];
       }
     case "UPDATE":
       if (isExpense(action.payload)) {
@@ -52,32 +49,46 @@ const expensesReducer = (
         return updatedExpenses;
       }
     case "DELETE":
-      if (typeof action.payload === "string") {
-        return state.filter((expense) => expense.id !== action.payload);
-      }
+      return state.filter((expense) => expense.id !== action.payload);
     default:
       return state;
   }
 };
 
-const initialState: Expense[] = DUMMY_EXPENSES;
-
+const initialState: Expense[] = [];
 export const ExpensesContextProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
   const [expensesState, dispatch] = useReducer(expensesReducer, initialState);
-  const addExpense = (expense: ExpenseWithoutId) => {
+  const addExpense = (expense: Expense) => {
     dispatch({ type: "ADD", payload: expense });
   };
   const deleteExpense = (id: string) => {
+    console.log("deleteExpense", id);
     dispatch({ type: "DELETE", payload: id });
   };
 
   const updateExpense = (expense: Expense) => {
     dispatch({ type: "UPDATE", payload: expense });
   };
+
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      const expenses = await fetchAllExpenses();
+      expenses.map((expense) => {
+        const transformedExpense: Expense = {
+          id: expense.id.toString(),
+          amount: expense.amount,
+          date: new Date(expense.date),
+          description: expense.description,
+        };
+        dispatch({ type: "ADD", payload: transformedExpense });
+      });
+    };
+    fetchExpenses();
+  }, []);
 
   return (
     <ExpensesContext.Provider
